@@ -9,7 +9,7 @@ var b = 20986;
 
 // Synchronous Function - Will BLOCK THE MAIN THREAD - DON"T USE IT
 console.log("========");
-crypto.pbkdf2Sync("password", "salt", 50000000, 50, "sha512");
+// crypto.pbkdf2Sync("password", "salt", 50000000, 50, "sha512");
 console.log("First Key is Generated");
 
 setTimeout(() => {
@@ -17,8 +17,8 @@ setTimeout(() => {
 }, 0); // it will only be called once call stack of main thread is empty
 
 // Async Function
-crypto.pbkdf2("password", "salt", 5000000, 50, "sha512", (err, key) => {
-  console.log("Second Key is generated");
+crypto.pbkdf2("passworddd", "salt", 5000000, 50, "sha512", (err, key) => {
+  console.log("Second Key is generated", key);
 });
 
 function multiplyFn(x, y) {
