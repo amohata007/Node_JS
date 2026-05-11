@@ -13,10 +13,12 @@ async function main(){
     const db = client.db(dbName);
     const collection = db.collection('Victory');
 
-    await collection.insertOne({
-        name: "Rahul",
-        age: 21
-    });
+    // await collection.insertOne({
+    //     name: "Rahul",
+    //     age: 21
+    // });
+
+    await collection.deleteOne({name:"Rahul"});
 
     const findResult = await collection.find({}).toArray();
     console.log(findResult);
