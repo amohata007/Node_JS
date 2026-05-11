@@ -1,6 +1,7 @@
 const {MongoClient} = require("mongodb");
+const {URL} = require("./secret.js")
 
-const url = "mongodb+srv://amohata007:password@namastenode.6jakfh0.mongodb.net/";
+const url = URL;
 
 const client = new MongoClient(url);
 
