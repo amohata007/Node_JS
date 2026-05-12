@@ -1,5 +1,5 @@
-const {MongoClient} = require("mongodb");
-const {URL} = require("./secret.js")
+const { MongoClient } = require("mongodb");
+const { URL } = require("./secret.js")
 
 const url = URL;
 
@@ -7,7 +7,7 @@ const client = new MongoClient(url);
 
 const dbName = 'NodeJS';
 
-async function main(){
+async function main() {
     await client.connect();
     console.log("Connected Sucessfully");
     const db = client.db(dbName);
@@ -18,7 +18,7 @@ async function main(){
     //     age: 21
     // });
 
-    await collection.deleteOne({name:"Rahul"});
+    await collection.deleteOne({ name: "Rahul" });
 
     const findResult = await collection.find({}).toArray();
     console.log(findResult);
@@ -29,4 +29,4 @@ async function main(){
 main()
     .then(console.log)
     .catch(console.error)
-    .finally(()=>client.close());
+    .finally(() => client.close());
