@@ -1,5 +1,5 @@
 const {x,calculate} = require("./xyz.js"); 
-const {multiply,sum} = require("./Calculate")
+const {multiply,sum} = require("./Calculate/index.js")
 
 console.log("hi");
 let a = 10;
