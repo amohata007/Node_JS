@@ -1,17 +1,29 @@
 const express = require("express");
 const { adminAuth } = require("./middlewares/auth");
+const { connectDb } = require("./config/database");
 
 const app = express();
 
-app.use('/admin',adminAuth)
+connectDb
+    .then(() => {
+        console.log("Database connection established succcessfully..!!");
+        app.listen(3000, () => {
+            console.log("Server listening at port 3000");
+        })
+    })
+    .catch((err) => {
+        console.error("Database cannot be established..!!");
+    })
 
-app.get('/admin/getData',(req,res)=>{
-    res.send("Got all the data");
-})
+// app.use('/admin',adminAuth)
 
-app.delete('/admin/deleteData',(req,res)=>{
-    res.send("Deleted Successfully");
-})
+// app.get('/admin/getData',(req,res)=>{
+//     res.send("Got all the data");
+// })
+
+// app.delete('/admin/deleteData',(req,res)=>{
+//     res.send("Deleted Successfully");
+// })
 
 // app.get('/next', (req, res, next) => {
 //     // res.send("First block");
@@ -24,7 +36,7 @@ app.delete('/admin/deleteData',(req,res)=>{
 
 // app.get("/user/:id/:name", (req, res) => {
 //     // console.log(req.query); //http://localhost:3000/user?userId=1&pass=testing //"/user"
-//     console.log(req.params); //http://localhost:3000/user/1/hello 
+//     console.log(req.params); //http://localhost:3000/user/1/hello
 //     res.send({
 //         "firstName": "Abhi",
 //         "lastName": "Mohata"
@@ -46,7 +58,3 @@ app.delete('/admin/deleteData',(req,res)=>{
 // app.use('/', (req, res) => {
 //     res.send("Hello from the server global");
 // })
-
-app.listen(3000, () => {
-    console.log("Server listening at port 3000");
-})
