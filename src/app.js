@@ -1,10 +1,27 @@
 const express = require("express");
 const { adminAuth } = require("./middlewares/auth");
 const { connectDb } = require("./config/database");
+const { User } = require("./models/users");
 
 const app = express();
 
-connectDb
+app.post('/signup', async (req,res)=>{
+    try{
+        const user = new User({
+            'firstName': 'Abhi',
+            'lastName': 'Mohata',
+            'age': 30,
+            'gender': 'Male'
+        })
+        await user.save();
+        res.send("Data submitted to DB successfully..!!")
+    }
+    catch(err){
+        res.status(400).send("OOPs..API not found.");
+    }
+})
+
+connectDb()
     .then(() => {
         console.log("Database connection established succcessfully..!!");
         app.listen(3000, () => {
