@@ -33,7 +33,7 @@ app.post('/signup', async (req,res)=>{
         res.send("Data send successfully..!!")
     }
     catch(err){
-        res.status(400).send("Something went wrong..!!");
+        res.status(400).send(err.message);
     }
 })
 
@@ -83,11 +83,11 @@ app.delete('/deleteUser', async (req,res)=>{
 app.patch('/updateUser', async (req,res)=>{
     const { userId, ...updateData } = req.body;
     try{
-        await User.findByIdAndUpdate(userId,updateData);
+        await User.findByIdAndUpdate(userId,updateData,{runValidators: true});
         res.send("Updated Successfully..!!")
     }
     catch(err){
-        res.status(400).send("Something went wrong..!!");
+        res.status(400).send("Something went wrong..!!" + err.message);
     }
 })
 
