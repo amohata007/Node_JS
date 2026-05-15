@@ -5,19 +5,89 @@ const { User } = require("./models/users");
 
 const app = express();
 
+app.use(express.json());
+
+// app.post('/signup', async (req,res)=>{
+//     try{
+//         const user = new User({
+//             'firstName': 'Abhi',
+//             'lastName': 'Mohata',
+//             'age': 30,
+//             'gender': 'Male'
+//         })
+//         await user.save();
+//         res.send("Data submitted to DB successfully..!!")
+//     }
+//     catch(err){
+//         res.status(400).send("OOPs..API not found.");
+//     }
+// })
+
+//Signup API
 app.post('/signup', async (req,res)=>{
+    console.log(req.body);
+    const data = req.body;
     try{
-        const user = new User({
-            'firstName': 'Abhi',
-            'lastName': 'Mohata',
-            'age': 30,
-            'gender': 'Male'
-        })
+        const user = new User(data);
         await user.save();
-        res.send("Data submitted to DB successfully..!!")
+        res.send("Data send successfully..!!")
     }
     catch(err){
-        res.status(400).send("OOPs..API not found.");
+        res.status(400).send("Something went wrong..!!");
+    }
+})
+
+//search from mail id
+app.post('/fetchUser',async (req,res)=>{
+    const email = req.body.emailId;
+    try{
+        const data = await User.find({emailId: email});
+        if(data.length===0){
+            res.send("No Email found..!!")
+        }
+        else{
+            res.send(data);
+        }
+        
+    }
+    catch(err){
+        res.status(400).send("Something went wrong..!!");
+    }
+})
+
+//Feed Api - get all the users
+app.get('/feed', async (req,res)=>{
+    try{
+        const data = await User.find({});
+        res.send(data)
+    }
+    catch(err){
+        res.status(400).send("Something went wrong..!!");
+    }
+})
+
+//Delete By Id 
+app.delete('/deleteUser', async (req,res)=>{
+    const userId = req.body.userId;
+    try{
+        // await User.findByIdAndDelete({_id:userId}); //same
+        await User.findByIdAndDelete(userId);
+        res.send("Deleted Successfully..!!");
+    }
+    catch(err){
+        res.status(400).send("Something went wrong..!!");
+    }
+})
+
+//update by Id
+app.patch('/updateUser', async (req,res)=>{
+    const { userId, ...updateData } = req.body;
+    try{
+        await User.findByIdAndUpdate(userId,updateData);
+        res.send("Updated Successfully..!!")
+    }
+    catch(err){
+        res.status(400).send("Something went wrong..!!");
     }
 })
 
