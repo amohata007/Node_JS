@@ -1,5 +1,6 @@
 const { Timestamp } = require("bson");
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -20,12 +21,24 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        trim: true
+        trim: true,
+        validate(value){
+            const isValidate = validator.isEmail(value);
+            if(!isValidate){
+                throw new Error("Invalid Email - " + value);
+            }
+        }
     },
     password: {
         type: String,
         required: true,
         trim: true,
+        validate(value){
+            const isValidate = validator.isStrongPassword(value);
+            if(!isValidate){
+                throw new Error("Invalid Password - " + value);
+            }
+        }
     },
     age: {
         type: Number,
@@ -50,7 +63,13 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
-        default: "https://kristalle.com/team/david-and-audrey-lloyd/dummy-profile-pic/"
+        default: "https://kristalle.com/team/david-and-audrey-lloyd/dummy-profile-pic/",
+        validate(value){
+            const isValidate = validator.isURL(value);
+            if(!isValidate){
+                throw new Error("Invalid URL - " + value);
+            }
+        }
     },
     bio: {
         type: String,
