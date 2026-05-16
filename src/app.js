@@ -2,6 +2,8 @@ const express = require("express");
 const { adminAuth } = require("./middlewares/auth");
 const { connectDb } = require("./config/database");
 const { User } = require("./models/users");
+const bcrypt = require("bcrypt");
+const { validateSignUpData } = require("./utils/validations");
 
 const app = express();
 
@@ -24,75 +26,102 @@ app.use(express.json());
 // })
 
 //Signup API
-app.post('/signup', async (req,res)=>{
-    console.log(req.body);
-    const data = req.body;
-    try{
-        const user = new User(data);
+app.post('/signup', async (req, res) => {
+    try {
+        validateSignUpData(req);
+        const { firstName, lastName, emailId, password } = req.body;
+        const passwordHash = await bcrypt.hash(password, 10);
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: passwordHash
+        });
         await user.save();
-        res.send("Data send successfully..!!")
+        res.send("Data send successfully saved for: " + firstName);
     }
-    catch(err){
+    catch (err) {
+        res.status(400).send(err.message);
+    }
+})
+
+//login api
+app.post("/login", async (req,res)=>{
+    try{
+        const {emailId,password} = req.body;
+        const findEmail = await User.findOne({emailId: emailId});
+        if(!findEmail){
+            throw new Error("Invalid Crendentials..!!")
+        }
+        const isValidPassword = await bcrypt.compare(password,findEmail.password);
+        if(!isValidPassword){
+            throw new Error("Invalid Crendentials..!!")
+        }
+        else{
+            res.send("Logged in successfull for - "+ emailId);
+        }
+    }
+    catch (err) {
         res.status(400).send(err.message);
     }
 })
 
 //search from mail id
-app.post('/fetchUser',async (req,res)=>{
+app.post('/fetchUser', async (req, res) => {
     const email = req.body.emailId;
-    try{
-        const data = await User.find({emailId: email});
-        if(data.length===0){
+    try {
+        const data = await User.find({ emailId: email });
+        if (data.length === 0) {
             res.send("No Email found..!!")
         }
-        else{
+        else {
             res.send(data);
         }
-        
+
     }
-    catch(err){
+    catch (err) {
         res.status(400).send("Something went wrong..!!");
     }
 })
 
 //Feed Api - get all the users
-app.get('/feed', async (req,res)=>{
-    try{
+app.get('/feed', async (req, res) => {
+    try {
         const data = await User.find({});
         res.send(data)
     }
-    catch(err){
+    catch (err) {
         res.status(400).send("Something went wrong..!!");
     }
 })
 
 //Delete By Id 
-app.delete('/deleteUser', async (req,res)=>{
+app.delete('/deleteUser', async (req, res) => {
     const userId = req.body.userId;
-    try{
+    try {
         // await User.findByIdAndDelete({_id:userId}); //same
         await User.findByIdAndDelete(userId);
         res.send("Deleted Successfully..!!");
     }
-    catch(err){
+    catch (err) {
         res.status(400).send("Something went wrong..!!");
     }
 })
 
 //update by Id
-app.patch('/updateUser', async (req,res)=>{
+app.patch('/updateUser', async (req, res) => {
     const { userId, ...updateData } = req.body;
-    try{
-        const allowed_update = ['firstName','lastName','password','skills','photoUrl','bio'];
+    try {
+        const allowed_update = ['firstName', 'lastName', 'password', 'skills', 'photoUrl', 'bio'];
         const requestedUpdate = Object.keys(updateData);
-        const isAllowed = requestedUpdate.every((field)=>allowed_update.includes(field));
+        const isAllowed = requestedUpdate.every((field) => allowed_update.includes(field));
         if (!isAllowed) {
             return res.status(400).send("Invalid updates!");
         }
-        await User.findByIdAndUpdate(userId,updateData,{runValidators: true});
+        await User.findByIdAndUpdate(userId, updateData, { runValidators: true });
         res.send("Updated Successfully..!!")
     }
-    catch(err){
+    catch (err) {
         res.status(400).send("Something went wrong..!!" + err.message);
     }
 })
