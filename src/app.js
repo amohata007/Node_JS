@@ -1,13 +1,17 @@
 const express = require("express");
-const { adminAuth } = require("./middlewares/auth");
+const { adminAuth, auth } = require("./middlewares/auth");
 const { connectDb } = require("./config/database");
 const { User } = require("./models/users");
 const bcrypt = require("bcrypt");
 const { validateSignUpData } = require("./utils/validations");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 // app.post('/signup', async (req,res)=>{
 //     try{
@@ -58,8 +62,32 @@ app.post("/login", async (req,res)=>{
             throw new Error("Invalid Crendentials..!!")
         }
         else{
+            const token = await jwt.sign({_id:findEmail._id},"Token@123",
+                {expiresIn: '1d'}
+            );
+            res.cookie("token",token);
             res.send("Logged in successfull for - "+ emailId);
         }
+    }
+    catch (err) {
+        res.status(400).send(err.message);
+    }
+})
+
+app.get("/profile",auth, async (req,res)=>{
+    try{
+        res.send(req.userDetail);
+    }
+    catch (err) {
+        res.status(400).send(err.message);
+    }
+})
+
+//connection request
+app.post("/connectionRequest",auth, async (req,res)=>{
+    try{
+        const {firstName, lastName} = req.userDetail;
+        res.send(firstName+" "+lastName+" send the connection request");
     }
     catch (err) {
         res.status(400).send(err.message);
