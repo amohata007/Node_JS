@@ -2,10 +2,10 @@ const express = require("express");
 const { adminAuth, auth } = require("./middlewares/auth");
 const { connectDb } = require("./config/database");
 const { User } = require("./models/users");
-const bcrypt = require("bcrypt");
-const { validateSignUpData } = require("./utils/validations");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
+const {authRoute} = require('./routes/auth');
+const {profileRoute} = require('./routes/profile');
+const {requestRoute} = require('./routes/request');
 
 
 const app = express();
@@ -13,86 +13,9 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// app.post('/signup', async (req,res)=>{
-//     try{
-//         const user = new User({
-//             'firstName': 'Abhi',
-//             'lastName': 'Mohata',
-//             'age': 30,
-//             'gender': 'Male'
-//         })
-//         await user.save();
-//         res.send("Data submitted to DB successfully..!!")
-//     }
-//     catch(err){
-//         res.status(400).send("OOPs..API not found.");
-//     }
-// })
-
-//Signup API
-app.post('/signup', async (req, res) => {
-    try {
-        validateSignUpData(req);
-        const { firstName, lastName, emailId, password } = req.body;
-        const passwordHash = await bcrypt.hash(password, 10);
-        const user = new User({
-            firstName,
-            lastName,
-            emailId,
-            password: passwordHash
-        });
-        await user.save();
-        res.send("Data send successfully saved for: " + firstName);
-    }
-    catch (err) {
-        res.status(400).send(err.message);
-    }
-})
-
-//login api
-app.post("/login", async (req,res)=>{
-    try{
-        const {emailId,password} = req.body;
-        const findEmail = await User.findOne({emailId: emailId});
-        if(!findEmail){
-            throw new Error("Invalid Crendentials..!!")
-        }
-        const isValidPassword = await bcrypt.compare(password,findEmail.password);
-        if(!isValidPassword){
-            throw new Error("Invalid Crendentials..!!")
-        }
-        else{
-            const token = await jwt.sign({_id:findEmail._id},"Token@123",
-                {expiresIn: '1d'}
-            );
-            res.cookie("token",token);
-            res.send("Logged in successfull for - "+ emailId);
-        }
-    }
-    catch (err) {
-        res.status(400).send(err.message);
-    }
-})
-
-app.get("/profile",auth, async (req,res)=>{
-    try{
-        res.send(req.userDetail);
-    }
-    catch (err) {
-        res.status(400).send(err.message);
-    }
-})
-
-//connection request
-app.post("/connectionRequest",auth, async (req,res)=>{
-    try{
-        const {firstName, lastName} = req.userDetail;
-        res.send(firstName+" "+lastName+" send the connection request");
-    }
-    catch (err) {
-        res.status(400).send(err.message);
-    }
-})
+app.use("/",authRoute);
+app.use("/",profileRoute);
+app.use("/",requestRoute);
 
 //search from mail id
 app.post('/fetchUser', async (req, res) => {
