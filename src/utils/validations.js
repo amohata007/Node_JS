@@ -14,4 +14,20 @@ const validateSignUpData = (req) => {
     }
 }
 
-module.exports = {validateSignUpData}
+const validateProfileData = (req) => {
+    const allowedUpdates = ["firstName","lastName","skills","bio","gender","age","photoUrl"];
+    const keys = Object.keys(req.body);
+    const isAllowed = keys.every((field)=>allowedUpdates.includes(field));
+    if(!isAllowed){
+        throw new Error("Invalid fields..!!");
+    }
+}
+
+const validatePassword = (req) => {
+    const {newPassword, retypePassword} = req.body;
+    if(!validator.isStrongPassword(newPassword) || !validator.isStrongPassword(retypePassword)){
+        throw new Error("Please enter strong password..!!")
+    }
+}
+
+module.exports = {validateSignUpData, validateProfileData, validatePassword}

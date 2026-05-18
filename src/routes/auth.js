@@ -50,4 +50,10 @@ authRoute.post("/login", async (req,res)=>{
     }
 })
 
+//logout
+authRoute.post("/logout", async(req,res)=>{
+    res.clearCookie('token');
+    res.send("Logged Out..!!");
+})
+
 module.exports = {authRoute};
