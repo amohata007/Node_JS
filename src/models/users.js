@@ -22,9 +22,9 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        validate(value){
+        validate(value) {
             const isValidate = validator.isEmail(value);
-            if(!isValidate){
+            if (!isValidate) {
                 throw new Error("Invalid Email - " + value);
             }
         }
@@ -33,9 +33,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        validate(value){
+        validate(value) {
             const isValidate = validator.isStrongPassword(value);
-            if(!isValidate){
+            if (!isValidate) {
                 throw new Error("Invalid Password - " + value);
             }
         }
@@ -64,9 +64,9 @@ const userSchema = new mongoose.Schema({
     photoUrl: {
         type: String,
         default: "https://kristalle.com/team/david-and-audrey-lloyd/dummy-profile-pic/",
-        validate(value){
+        validate(value) {
             const isValidate = validator.isURL(value);
-            if(!isValidate){
+            if (!isValidate) {
                 throw new Error("Invalid URL - " + value);
             }
         }
@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "This is the default bio tag..!!"
     }
-}, {timestamps: true})
+}, { timestamps: true })
 
 const User = mongoose.model("User", userSchema);
 
