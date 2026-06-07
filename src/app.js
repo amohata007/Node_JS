@@ -3,9 +3,9 @@ const { adminAuth, auth } = require("./middlewares/auth");
 const { connectDb } = require("./config/database");
 const { User } = require("./models/users");
 const cookieParser = require("cookie-parser");
-const {authRoute} = require('./routes/auth');
-const {profileRoute} = require('./routes/profile');
-const {requestRoute} = require('./routes/request');
+const { authRoute } = require('./routes/auth');
+const { profileRoute } = require('./routes/profile');
+const { requestRoute } = require('./routes/request');
 
 
 const app = express();
@@ -13,9 +13,9 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/",authRoute);
-app.use("/",profileRoute);
-app.use("/",requestRoute);
+app.use("/", authRoute);
+app.use("/", profileRoute);
+app.use("/", requestRoute);
 
 //search from mail id
 app.post('/fetchUser', async (req, res) => {
